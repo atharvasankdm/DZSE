@@ -2,7 +2,7 @@
 // Created By: ADARSH SHRIVASTAVA
 
 pragma solidity >=0.7.0 <0.9.0;
-import './Company.sol';
+import './Reliance.sol';
 
 contract Exchange{
     address owner;

@@ -1,0 +1,20 @@
+const jwt = require("jsonwebtoken")
+const JWT_SECRET = "HelloRashid"
+
+const fetchcompany = (req, res, next) => {
+    // Get the user from JWT token and append it to req object
+    // console.log(req.header)
+    const token = req.header("auth-token");
+    console.log("Middleware company", token)
+    if(!token) return res.status(401).send({error : "Please Authenticate with valid token"})
+    try {
+        const data = jwt.verify(token, JWT_SECRET);
+        req.user = data.user;
+        console.log("Middleware company" , req.user)
+        next();
+    } catch (error) {
+        res.status(401).send({error : "Please Authenticate with valid token"})
+    }
+}
+
+module.exports = fetchcompany;

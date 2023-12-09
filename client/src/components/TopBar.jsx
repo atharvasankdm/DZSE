@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import Modal from "react-modal";
+import { userContext } from "../contexts/userContext";
+import { useContext } from "react";
+import { ethers } from "ethers";
 
 const customStyles = {
   content: {
@@ -15,6 +18,17 @@ const customStyles = {
 const TopBar = () => {
   const [showProfileDown, setShowProfileDOwn] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [account, setAccount] = useState(null);
+  const connectWallet = async () => {
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const account = ethers.utils.getAddress(accounts[0]);
+    setAccount(account);
+  };
+
+  const { user } = useContext(userContext);
+  console.log(user);
 
   return (
     <div className="w-[70%] fixed top-0 border-gray-200 border-b-[1px] flex justify-between py-4">
@@ -32,12 +46,20 @@ const TopBar = () => {
       </div>
 
       <div className="mr-4 flex">
-        <button
-          type="button"
-          className="w-28 text-white text-[12px] bg-[#5462B5]  rounded-md shadow-slate-500 h-12 mr-4"
-        >
-          Connect Wallet
-        </button>
+        {!account ? (
+          <button
+            type="button"
+            className="w-28 text-white text-[12px] bg-[#5462B5]  rounded-md shadow-slate-500 h-12 mr-4"
+            onClick={connectWallet}
+          >
+            Connect Wallet
+          </button>
+        ) : (
+          <div className="flex flex-col justify-center mr-4">
+            <p>Account address:</p>
+            <p className="text-slate-400">{account}</p>
+          </div>
+        )}
         <div className="relative">
           <img
             src="https://tiermaker.com/images/chart/chart/cartoon-characters-i-want-to-punch-in-the-face-full-748002/41cuqnjf5klacjpg.png"
@@ -49,7 +71,7 @@ const TopBar = () => {
           />
           {showProfileDown && (
             <div className="w-44 h-28 absolute top-12 shadow-lg bg-white flex flex-col justify-center items-center">
-              <span className="text-[20px]">Atharva Kadam</span>
+              <span className="text-[20px]">{user.name}</span>
               {!verified ? (
                 <button
                   type="button"

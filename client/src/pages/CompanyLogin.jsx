@@ -1,9 +1,43 @@
-import React from "react";
+import React, {useState} from "react";
 import { CiMail } from "react-icons/ci";
 import { CiLock } from "react-icons/ci";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 
 const CompanyLogin = () => {
+
+  let navigate = useNavigate()
+  const [credentials  , setCredentials] = useState({email : '' , password : ""})
+
+  const handleSubmit =  async () => {
+    console.log("logn cliked ")
+    console.log(credentials)
+    const response = await fetch("http://localhost:5000/api/stock/login", {
+      method : 'POST',
+      headers: {
+        "Content-Type" : "application/json"
+      }, 
+      body: JSON.stringify({email :credentials.email , password : credentials.password})
+      // body: JSON.stringify({phone : , password : credentials.phone})
+    })
+
+    const json = await response.json()
+    console.log(json);
+    console.log(json.authToken)
+    if (json.success) {
+      localStorage.setItem('token' , json.authToken)
+      navigate('/company/home')
+    } else {
+      alert("Invalid Credentials!")
+    }
+  }
+
+
+  const onChange = (e) => {
+    setCredentials({...credentials, [e.target.name] : e.target.value})
+    console.log([e.target.name] , e.target.value)
+  }
+
+
   return (
     <div className="w-[100vw] h-[100vh] bg-[#B8CEE4] flex justify-center items-center font-['Poppins']">
       <div className="w-[75%] h-[85%] shadow-md rounded-lg flex">
@@ -36,6 +70,9 @@ const CompanyLogin = () => {
               <input
                 type="search"
                 id="search"
+                name = "email"
+                onChange={onChange}
+                value = {credentials.email}
                 className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
                 placeholder="Email Address"
                 required
@@ -49,6 +86,9 @@ const CompanyLogin = () => {
               <input
                 type="search"
                 id="search"
+                name = "password"
+                onChange={onChange}
+                value = {credentials.password}
                 className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
                 placeholder="Password"
                 required
@@ -57,6 +97,7 @@ const CompanyLogin = () => {
             <button
               type="button"
               className="w-full h-10 text-white text-[12px] bg-[#0575E6] p-2 rounded-lg shadow-slate-500 shadow-sm mt-4"
+              onClick={handleSubmit}
             >
               Login
             </button>

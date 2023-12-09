@@ -1,10 +1,39 @@
-import React from "react";
-import { CiMail } from "react-icons/ci";
+import React ,{useState} from "react";
+import { CiPhone } from "react-icons/ci";
 import { CiLock } from "react-icons/ci";
 import { CiFaceSmile } from "react-icons/ci";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 
 const Login = () => {
+  let navigate = useNavigate()
+  const [credentials  , setCredentials] = useState({name : "" , phone : "" , password : ""})
+
+  const handleSubmit =  async () => {
+    console.log("register cliked ")
+    console.log(credentials)
+    const response = await fetch("http://localhost:5000/api/auth/createUser", {
+      method : 'POST',
+      headers: {
+        "Content-Type" : "application/json"
+      }, 
+      body: JSON.stringify({name : credentials.name , phone :credentials.phone , password : credentials.password})
+      // body: JSON.stringify({phone : , password : credentials.phone})
+    })
+    const json = await response.json()
+    console.log(json);
+    if (json.success) {
+      // localStorage.setItem('token' , json.authToken)
+      navigate('/investor/login')
+    } else {
+      alert("Customer already exists!")
+    }
+  }
+
+  const onChange = (e) => {
+    setCredentials({...credentials, [e.target.name] : e.target.value})
+    // console.log([e.target.name] , e.target.value)
+  }
+
   return (
     <div className="w-[100vw] h-[100vh] bg-[#B8CEE4] flex justify-center items-center font-['Poppins']">
       <div className="w-[75%] h-[85%] shadow-md rounded-lg flex">
@@ -37,6 +66,9 @@ const Login = () => {
               <input
                 type="search"
                 id="search"
+                name="name" // Add this name attribute
+                value = {credentials.name}
+                onChange={onChange}
                 className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
                 placeholder="Full Name"
                 required
@@ -45,13 +77,16 @@ const Login = () => {
 
             <div className="relative mt-4">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <CiMail />
+                <CiPhone />
               </div>
               <input
                 type="search"
                 id="search"
+                name="phone" // Add this name attribute
+                value = {credentials.phone}
+                onChange={onChange}
                 className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
-                placeholder="Email Address"
+                placeholder="Phone"
                 required
               />
             </div>
@@ -63,6 +98,9 @@ const Login = () => {
               <input
                 type="search"
                 id="search"
+                name="password" // Add this name attribute
+                value = {credentials.password}
+                onChange={onChange}
                 className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
                 placeholder="Password"
                 required
@@ -71,6 +109,7 @@ const Login = () => {
             <button
               type="button"
               className="w-full h-10 text-white text-[12px] bg-[#0575E6] p-2 rounded-lg shadow-slate-500 shadow-sm mt-4"
+              onClick={handleSubmit}
             >
               Sign up
             </button>

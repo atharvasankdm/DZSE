@@ -1,9 +1,42 @@
-import React from "react";
+import React, {useState} from "react";
 import { CiMail } from "react-icons/ci";
 import { CiLock } from "react-icons/ci";
 import { CiFaceSmile } from "react-icons/ci";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
+
+
 const CompanyRegister = () => {
+
+  let navigate = useNavigate()
+  const [credentials  , setCredentials] = useState({name : "" , email : "" , password : ""})
+
+  const handleSubmit =  async () => {
+    console.log("company register cliked ")
+    console.log(credentials)
+    const response = await fetch("http://localhost:5000/api/stock/createStock", {
+      method : 'POST',
+      headers: {
+        "Content-Type" : "application/json"
+      }, 
+      body: JSON.stringify({email :credentials.email , password : credentials.password, name : credentials.name})
+      // body: JSON.stringify({email : , password : credentials.email})
+    })
+    const json = await response.json()
+    console.log(json);
+    if (json.success) {
+      // localStorage.setItem('token' , json.authToken)
+      console.log(json.response)
+      navigate('/company/login')
+    } else {
+      alert("Customer already exists!")
+    }
+  }
+
+  const onChange = (e) => {
+    setCredentials({...credentials, [e.target.name] : e.target.value})
+  }
+
+  
   return (
     <div className="w-[100vw] h-[100vh] bg-[#B8CEE4] flex justify-center items-center font-['Poppins']">
       <div className="w-[75%] h-[85%] shadow-md rounded-lg flex">
@@ -36,6 +69,9 @@ const CompanyRegister = () => {
               <input
                 type="search"
                 id="search"
+                name="name" // Add this name attribute
+                value = {credentials.name}
+                onChange={onChange}
                 className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
                 placeholder="Company Name"
                 required
@@ -49,6 +85,9 @@ const CompanyRegister = () => {
               <input
                 type="search"
                 id="search"
+                name="email" // Add this name attribute
+                value = {credentials.email}
+                onChange={onChange}
                 className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
                 placeholder="Email Address"
                 required
@@ -62,6 +101,9 @@ const CompanyRegister = () => {
               <input
                 type="search"
                 id="search"
+                name="password" // Add this name attribute
+                value = {credentials.password}
+                onChange={onChange}
                 className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
                 placeholder="Password"
                 required
@@ -70,6 +112,7 @@ const CompanyRegister = () => {
             <button
               type="button"
               className="w-full h-10 text-white text-[12px] bg-[#0575E6] p-2 rounded-lg shadow-slate-500 shadow-sm mt-4"
+              onClick={handleSubmit}
             >
               Sign up
             </button>
